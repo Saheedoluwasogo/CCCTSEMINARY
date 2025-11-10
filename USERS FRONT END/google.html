@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedding HTML</title>
+</head>
+<body>
+    <h1>Embedding HTML</h1>
+    <p>This is an example of embedding HTML code within a webpage.</p>
+    <iframe src="https://www.example.com" width="600" height="400"></iframe>
+    <h1>Welcome to My Page</h1>
+  <p>This is some content that will be translated by the Google Translate widget.</p>
+  <p>You can select your preferred language from the dropdown menu.</p>
+
+  <!-- Google Translate Element -->
+  <div id="google_translate_element"></div>
+
+  <!-- Google Translate Initialization Script -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+    }
+  </script>
+
+  <!-- Google Translate API Script -->
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

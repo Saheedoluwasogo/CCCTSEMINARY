@@ -1,0 +1,12 @@
+CCCTSeminary : Celestial Church of Christ Theological Seminary
+-------------------------------------------
+
+info@cctheologicalseminary.com
+-------------------------------------------
+
+flag-us">English US</option>
+									<option data-icon="flag flag-uk">English UK</option>
+--------------------------------------------------
+
+"https://thecccworldwide.org">Click to Visit CCC Worldwide Website</a></div>
+-------------------------------------------------
