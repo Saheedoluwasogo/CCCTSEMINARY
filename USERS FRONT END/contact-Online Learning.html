@@ -53,25 +53,49 @@
 <div class="page-wraper">
 <div id="loading-icon-bx"></div>
 
-    <!-- Header Top ==== -->
-    <header class="header rs-nav">
+   <!-- Header Top ==== -->
+    <header class="header rs-nav header-transparent">
 		<div class="top-bar">
 			<div class="container">
-				<div class="row d-flex justify-content-between">
+				<div class="row d-fle x justify-content-between">
 					<div class="topbar-left">
 						<ul>
 							<li><a href="faq-1.html"><i class="fa fa-question-circle"></i>Ask a Question</a></li>
-							<li><a href="javascript:;"><i class="fa fa-envelope-o"></i>info@cctheologicalseminary.com</a></li>
+							<li><a href="javascript:;"><i class="fa fa-envelope-o"></i>info@ccctheologicalseminary.com</a></li>
 						</ul>
 					</div>
 					<div class="topbar-right">
 						<ul>
-							<li>
-								<select class="header-lang-bx">
-									<option data-icon="flag flag-us">English US</option>
-									<option data-icon="flag flag-uk">English UK</option>
-								</select>
-							</li>
+							<li>This page can be translated to Your preferred language.</li>
+							<!-- Google Translate Element -->
+					<li><div id="google_translate_element"></div></li>
+
+					<!-- Google Translate Scripts -->
+					<script type="text/javascript">
+						function googleTranslateElementInit() {
+						new google.translate.TranslateElement({
+							pageLanguage: 'en',
+							includedLanguages: 'en,fr,yo,ig,ha,es,de,it,pt,zh-CN,ar,hi,ru',
+							layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+							autoDisplay: false
+						}, 'google_translate_element');
+						}
+					</script>
+
+					<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+						<script>
+						window.addEventListener('load', function() {
+							const userLang = navigator.language || navigator.userLanguage;
+							if (userLang.startsWith('fr')) {
+							const select = document.querySelector('.goog-te-combo');
+							if (select) {
+								select.value = 'fr';
+								select.dispatchEvent(new Event('change'));
+							}
+							}
+						});
+						</script>
+					</li>
 							<li><a href="login.html">Login</a></li>
 							<li><a href="register.html">Register</a></li>
 						</ul>
@@ -84,7 +108,7 @@
                 <div class="container clearfix">
 					<!-- Header Logo ==== -->
 					<div class="menu-logo">
-						<a href="index.html"><img src="assets/images/logo.png" alt=""></a>
+						<a href="index.html"><img src="assets/images/logo-white.png" alt=""></a>
 					</div>
 					<!-- Mobile Nav Button ==== -->
                     <button class="navbar-toggler collapsed menuicon justify-content-end" type="button" data-toggle="collapse" data-target="#menuDropdown" aria-controls="menuDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,9 +120,10 @@
                     <div class="secondary-menu">
                         <div class="secondary-inner">
                             <ul>
-								<li><a href="javascript:;" class="btn-link"><i class="fa fa-facebook"></i></a></li>
-								<li><a href="javascript:;" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
-								<li><a href="javascript:;" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
+								<a href="https://web.facebook.com/CelestialTheologicalSeminary" class="btn-link" aria-label="Facebook"><i class="fa fa-facebook"></i></a></li><li>
+								<a href="https://mail.google.com/" target="_blank" class="btn-link" aria-label="Google Plus"><i class="fa fa-google-plus"></i></a></li><li>
+								<a href="https://www.linkedin.com/" class="btn-link" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+								<li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li></li>
 								<!-- Search Button ==== -->
 								<li class="search-btn"><button id="quik-search-btn" type="button" class="btn-link"><i class="fa fa-search"></i></button></li>
 							</ul>
@@ -121,7 +146,7 @@
 							<li class="active"><a href="javascript:;">Home <i class="fa fa-chevron-down"></i></a>
 								<ul class="sub-menu">
 									<li><a href="index.html">Home (Campus)</a></li>
-									<li><a href="index-2.html">Home (Online)</a></li>
+									<!-- <li><a href="index-2.html">Home (Online)</a></li> -->
 								</ul>
 							</li>
 							<li><a href="javascript:;">Pages <i class="fa fa-chevron-down"></i></a>
@@ -129,88 +154,57 @@
 									<li><a href="javascript:;">About<i class="fa fa-angle-right"></i></a>
 										<ul class="sub-menu">
 											<li><a href="about-Campus Learning.html">About Campus Learning</a></li>
-											<li><a href="about-Online Learning.html">About Online Learning</a></li>
-										</ul>
-									</li>
-									<li><a href="javascript:;">Event<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="event.html">Event</a></li>
-											<li><a href="events-details.html">Events Details</a></li>
+											<!-- <li><a href="about-Online Learning.html">About Online Learning</a></li> -->
 										</ul>
 									</li>
 									<li><a href="javascript:;">FAQ's<i class="fa fa-angle-right"></i></a>
 										<ul class="sub-menu">
-											<li><a href="faq-Campus Learning.html">FAQ's 1</a></li>
-											<li><a href="faq-Online Learning.html">FAQ's 2</a></li>
+											<li><a href="faq-Campus Learning.html">FAQ's Campus</a></li>
+											<!-- <li><a href="faq-Online Learning.html">FAQ's Online</a></li> -->
 										</ul>
 									</li>
 									<li><a href="javascript:;">Contact Us<i class="fa fa-angle-right"></i></a>
 										<ul class="sub-menu">
 											<li><a href="contact-Campus Learning.html">Contact (Campus)</a></li>
-											<li><a href="contact-Online Learning.html">Contact (Online)</a></li>
+											<!-- <li><a href="contact-Online Learning.html">Contact (Online)</a></li> -->
 										</ul>
 									</li>
 									<li><a href="portfolio.html">Portfolio</a></li>
-									<li><a href="profile.html">Profile</a></li>
-									<li><a href="membership.html">Membership</a></li>
-									<li><a href="error-404.html">404 Page</a></li>
+									<li><a href="profile.html"> School Profile</a></li>
+									<!-- <li><a href="membership.html">Membership</a></li> -->
+									<!-- <li><a href="error-404.html">404 Page</a></li> -->
 								</ul>
 							</li>
 							<li class="add-mega-menu"><a href="javascript:;">Our Courses <i class="fa fa-chevron-down"></i></a>
 								<ul class="sub-menu add-menu">
 									<li class="add-menu-left">
-										<h5 class="menu-adv-title">Our Courses</h5>
+										<!-- <h5 class="menu-adv-title">Our Courses</h5> -->
 										<ul>
-											<li><a href="courses.html">Courses </a></li>
-											<li><a href="courses-details.html">Courses Details</a></li>
-											<li><a href="profile.html">Instructor Profile</a></li>
-											<li><a href="event.html">Upcoming Event</a></li>
-											<li><a href="membership.html">Membership</a></li>
+											<li><a href="courses.html">Campus Courses </a></li>
+											<!-- <li><a href="courses-details.html">Courses Details</a></li> -->
+											<!-- <li><a href="profile.html">Lecturer's Profile</a></li> -->
+											<li><a href="events-details.html">Course Events</a></li>
+											<!-- <li><a href="membership.html">Membership</a></li> -->
 										</ul>
 									</li>
-									<li class="add-menu-right">
-										<img src="assets/images/adv/adv.jpg" alt=""/>
+									<!-- <li class="add-menu-right"> -->
+										<!-- <img src="assets/images/adv/adv.jpg" alt=""/> -->
 									</li>
 								</ul>
 							</li>
 							<li><a href="javascript:;">Blog <i class="fa fa-chevron-down"></i></a>
 								<ul class="sub-menu">
-									<li><a href="blog-classic-grid.html">Blog Classic</a></li>
-									<li><a href="blog-classic-sidebar.html">Blog Classic Sidebar</a></li>
-									<li><a href="blog-list-sidebar.html">Blog List Sidebar</a></li>
-									<li><a href="blog-standard-sidebar.html">Blog Standard Sidebar</a></li>
-									<li><a href="blog-details.html">Blog Details</a></li>
-								</ul>
-							</li>
-							<li class="nav-dashboard"><a href="javascript:;">Dashboard <i class="fa fa-chevron-down"></i></a>
-								<ul class="sub-menu">
-									<li><a href="admin/index.html">Dashboard</a></li>
-									<li><a href="admin/add-listing.html">Add Listing</a></li>
-									<li><a href="admin/bookmark.html">Bookmark</a></li>
-									<li><a href="admin/courses.html">Courses</a></li>
-									<li><a href="admin/review.html">Review</a></li>
-									<li><a href="admin/teacher-profile.html">Teacher Profile</a></li>
-									<li><a href="admin/user-profile.html">User Profile</a></li>
-									<li><a href="javascript:;">Calendar<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="admin/basic-calendar.html">Basic Calendar</a></li>
-											<li><a href="admin/list-view-calendar.html">List View Calendar</a></li>
-										</ul>
-									</li>
-									<li><a href="javascript:;">Mailbox<i class="fa fa-angle-right"></i></a>
-										<ul class="sub-menu">
-											<li><a href="admin/mailbox.html">Mailbox</a></li>
-											<li><a href="admin/mailbox-compose.html">Compose</a></li>
-											<li><a href="admin/mailbox-read.html">Mail Read</a></li>
-										</ul>
+									<!-- <li><a href="blog-classic-grid.html">Blog Classic</a></li> -->
+									<li><a href="blog-classic-sidebar.html">Our Blog</a></li>
+									<li><a href="event.html">Event</a></li>
 									</li>
 								</ul>
 							</li>
 						</ul>
 						<div class="nav-social-link">
-							<a href="javascript:;"><i class="fa fa-facebook"></i></a>
-							<a href="javascript:;"><i class="fa fa-google-plus"></i></a>
-							<a href="javascript:;"><i class="fa fa-linkedin"></i></a>
+							<a href="https://web.facebook.com/CelestialTheologicalSeminary" class="btn-link" aria-label="Facebook"><i class="fa fa-facebook"></i></a></li><li>
+								<a href="https://mail.google.com/" target="_blank" class="btn-link" aria-label="Google Plus"><i class="fa fa-google-plus"></i></a></li><li>
+								<a href="https://www.linkedin.com/" class="btn-link" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a></li>
 						</div>
                     </div>
 					<!-- Navigation Menu END ==== -->
@@ -218,7 +212,7 @@
             </div>
         </div>
     </header>
-    <!-- header END ==== -->
+    <!-- Header Top END ==== -->
     <!-- Content -->
     <div class="page-content bg-white">
         <!-- inner page banner -->
@@ -315,7 +309,7 @@
         <!-- inner page banner END -->
     </div>
     <!-- Content END-->
-    <!-- Footer ==== -->
+<!-- Footer ==== -->
     <footer>
         <div class="footer-top">
 			<div class="pt-exebar">
@@ -326,10 +320,10 @@
 						</div>
 						<div class="pt-social-link">
 							<ul class="list-inline m-a0">
-								<li><a href="#" class="btn-link"><i class="fa fa-facebook"></i></a></li>
+								<a href="https://web.facebook.com/CelestialTheologicalSeminary" class="btn-link" aria-label="Facebook"><i class="fa fa-facebook"></i></a></li><li>
+								<a href="https://mail.google.com/" target="_blank" class="btn-link" aria-label="Google Plus"><i class="fa fa-google-plus"></i></a></li><li>
+								<a href="https://www.linkedin.com/" class="btn-link" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a></li>
 								<li><a href="#" class="btn-link"><i class="fa fa-twitter"></i></a></li>
-								<li><a href="#" class="btn-link"><i class="fa fa-linkedin"></i></a></li>
-								<li><a href="#" class="btn-link"><i class="fa fa-google-plus"></i></a></li>
 							</ul>
 						</div>
 						<div class="pt-btn-join">
@@ -342,8 +336,8 @@
                 <div class="row">
 					<div class="col-lg-4 col-md-12 col-sm-12 footer-col-4">
                         <div class="widget">
-                            <h5 class="footer-title">Sign Up For A Newsletter</h5>
-							<p class="text-capitalize m-b20">Weekly Breaking news analysis and cutting edge advices on job searching.</p>
+                            <h5 class="footer-title">Sign Up For Bible Study</h5>
+							<p class="text-capitalize m-b20">Weekly Bible Teachings analysis and cutting edge advices on Spiritual Growth.</p>
                             <div class="subscribe-form m-b20">
 								<form class="subscription-form" action="http://educhamp.themetrades.com/demo/assets/script/mailchamp.php" method="post">
 									<div class="ajax-message"></div>
@@ -364,7 +358,7 @@
 									<h5 class="footer-title">Company</h5>
 									<ul>
 										<li><a href="index.html">Home</a></li>
-										<li><a href="about-1.html">About</a></li>
+										<li><a href="about-Campus Learning.html">About</a></li>
 										<li><a href="faq-1.html">FAQs</a></li>
 										<li><a href="contact-1.html">Contact</a></li>
 									</ul>
@@ -374,7 +368,7 @@
 								<div class="widget footer_widget">
 									<h5 class="footer-title">Get In Touch</h5>
 									<ul>
-										<li><a href="http://educhamp.themetrades.com/admin/index.html">Dashboard</a></li>
+										<!-- <li><a href="http://educhamp.themetrades.com/admin/index.html">Dashboard</a></li> -->
 										<li><a href="blog-classic-grid.html">Blog</a></li>
 										<li><a href="portfolio.html">Portfolio</a></li>
 										<li><a href="event.html">Event</a></li>
@@ -387,8 +381,8 @@
 									<ul>
 										<li><a href="courses.html">Courses</a></li>
 										<li><a href="courses-details.html">Details</a></li>
-										<li><a href="membership.html">Membership</a></li>
-										<li><a href="profile.html">Profile</a></li>
+										<!-- <li><a href="membership.html">Membership</a></li> -->
+										<li><a href="profile.html">School Profile</a></li>
 									</ul>
 								</div>
 							</div>
@@ -415,7 +409,8 @@
         <div class="footer-bottom">
             <div class="container">
                 <div class="row">
-                    <<div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://thecccworldwide.org">Click to Visit CCC Worldwide Website</a></div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-center"><a target="_blank" href="https://thecccworldwide.org">Click to Visit CCC Worldwide Website</a></div>
+                </div>
             </div>
         </div>
     </footer>
