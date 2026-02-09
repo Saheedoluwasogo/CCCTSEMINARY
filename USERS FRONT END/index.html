@@ -54,15 +54,68 @@
 	<!-- REVOLUTION SLIDER END -->
 <!-- CUSTOM FIX FOR SLIDER OVERLAP -->
 <style>
-    .service-info-bx {
-        margin-top: 150px;
+/* =========================================
+   MOBILE FIX — HEADER + SLIDER OVERLAP
+   For CCCTSeminary (Revolution Slider)
+========================================= */
+
+@media (max-width: 768px) {
+
+    /* 1. Disable transparent floating header */
+    .header-transparent {
+        position: relative !important;
+        background-color: #000 !important;
     }
 
-    @media (max-width: 768px) {
-        .service-info-bx {
-            margin-top: 200px;
-        }
+    /* 2. Reduce top bar height impact */
+    .top-bar {
+        padding: 5px 0;
     }
+
+    /* 3. Push slider below header properly */
+    .rev-slider {
+        margin-top: 120px !important;
+    }
+
+    /* 4. Control slider height on mobile */
+    .rev_slider_wrapper,
+    .rev_slider {
+        min-height: 520px !important;
+    }
+
+    /* 5. Force captions to wrap correctly */
+    .tp-caption {
+        white-space: normal !important;
+        text-align: center !important;
+        max-width: 90% !important;
+        left: 5% !important;
+    }
+
+    /* 6. Reduce title size */
+    .Newspaper-Title {
+        font-size: 24px !important;
+        line-height: 30px !important;
+    }
+
+    /* 7. Reduce subtitle size */
+    .Newspaper-Subtitle {
+        font-size: 15px !important;
+        line-height: 22px !important;
+    }
+
+    /* 8. Move buttons downward (your exact IDs) */
+    #slide-100-layer-5,
+    #slide-100-layer-6,
+    #slide-200-layer-5,
+    #slide-200-layer-6 {
+        transform: translateY(60px) !important;
+    }
+
+    /* 9. Create real space before Our Services */
+    .service-info-bx {
+        margin-top: 240px !important;
+    }
+}
 </style>
 </head>	
 	 </head>
