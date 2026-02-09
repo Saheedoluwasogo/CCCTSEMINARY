@@ -54,73 +54,67 @@
 	<!-- REVOLUTION SLIDER END -->
 @media (max-width: 768px) {
 
-    /* STOP header from floating */
+    .top-bar,
     header.header {
-        position: static !important;
+        position: relative !important;
+    }
+
+    .header-transparent {
         background: #000 !important;
     }
 
-    /* STOP top bar from overlapping */
-    .top-bar {
-        position: static !important;
-        height: auto !important;
+    body {
+        overflow-x: hidden;
     }
 
-    /* FORCE body content below header */
-    .page-content {
-        margin-top: 0 !important;
-        padding-top: 0 !important;
-    }
-
-    /* FORCE slider into normal flow */
     .rev-slider,
     .rev_slider_wrapper {
         position: relative !important;
-        top: 0 !important;
-        margin-top: 20px !important;
         z-index: 1 !important;
     }
 
-    /* FIX slider height on phone */
-    .rev_slider_wrapper,
-    .rev_slider {
-        min-height: 520px !important;
-    }
-
-    /* FORCE captions to wrap (no overlap) */
     .tp-caption {
+        position: relative !important;
         white-space: normal !important;
-        max-width: 90% !important;
-        left: 5% !important;
         text-align: center !important;
+        max-width: 90% !important;
+        margin: 0 auto !important;
     }
 
-    /* PUSH BUTTONS DOWN */
-    #slide-100-layer-5,
-    #slide-100-layer-6,
-    #slide-200-layer-5,
-    #slide-200-layer-6 {
-        transform: translateY(70px) !important;
+    .Newspaper-Title {
+        font-size: 22px !important;
+        line-height: 28px !important;
     }
 
-    /* PUSH OUR SERVICES DOWN */
+    .Newspaper-Subtitle {
+        font-size: 14px !important;
+        line-height: 22px !important;
+    }
+
     .service-info-bx {
         margin-top: 260px !important;
     }
 }
-@media (max-width: 768px) {
-    .mobile-solid {
-        position: static !important;
-        background: #000 !important;
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.innerWidth <= 768) {
+
+        const header = document.querySelector("header.header");
+        const slider = document.querySelector(".rev-slider");
+
+        if (header && slider) {
+            slider.style.marginTop = header.offsetHeight + "px";
+        }
     }
-}
+});
+</script>
 </head>	
 	 </head>
 <body id="bg">
 <div class="page-wraper">
 <div id="loading-icon-bx"></div>
 	<!-- Header Top ==== -->
-   <header class="header rs-nav header-transparent mobile-solid">
+   <header class="header rs-nav header-transparent">
 		<div class="top-bar">
 			<div class="container">
 				<div class="row d-fle x justify-content-between">
