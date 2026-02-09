@@ -52,78 +52,75 @@
 	<link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/settings.css">
 	<link rel="stylesheet" type="text/css" href="assets/vendors/revolution/css/navigation.css">
 	<!-- REVOLUTION SLIDER END -->
-<!-- CUSTOM FIX FOR SLIDER OVERLAP -->
-<style>
-/* =========================================
-   MOBILE FIX — HEADER + SLIDER OVERLAP
-   For CCCTSeminary (Revolution Slider)
-========================================= */
-
 @media (max-width: 768px) {
 
-    /* 1. Disable transparent floating header */
-    .header-transparent {
-        position: relative !important;
-        background-color: #000 !important;
+    /* STOP header from floating */
+    header.header {
+        position: static !important;
+        background: #000 !important;
     }
 
-    /* 2. Reduce top bar height impact */
+    /* STOP top bar from overlapping */
     .top-bar {
-        padding: 5px 0;
+        position: static !important;
+        height: auto !important;
     }
 
-    /* 3. Push slider below header properly */
-    .rev-slider {
-        margin-top: 120px !important;
+    /* FORCE body content below header */
+    .page-content {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
     }
 
-    /* 4. Control slider height on mobile */
+    /* FORCE slider into normal flow */
+    .rev-slider,
+    .rev_slider_wrapper {
+        position: relative !important;
+        top: 0 !important;
+        margin-top: 20px !important;
+        z-index: 1 !important;
+    }
+
+    /* FIX slider height on phone */
     .rev_slider_wrapper,
     .rev_slider {
         min-height: 520px !important;
     }
 
-    /* 5. Force captions to wrap correctly */
+    /* FORCE captions to wrap (no overlap) */
     .tp-caption {
         white-space: normal !important;
-        text-align: center !important;
         max-width: 90% !important;
         left: 5% !important;
+        text-align: center !important;
     }
 
-    /* 6. Reduce title size */
-    .Newspaper-Title {
-        font-size: 24px !important;
-        line-height: 30px !important;
-    }
-
-    /* 7. Reduce subtitle size */
-    .Newspaper-Subtitle {
-        font-size: 15px !important;
-        line-height: 22px !important;
-    }
-
-    /* 8. Move buttons downward (your exact IDs) */
+    /* PUSH BUTTONS DOWN */
     #slide-100-layer-5,
     #slide-100-layer-6,
     #slide-200-layer-5,
     #slide-200-layer-6 {
-        transform: translateY(60px) !important;
+        transform: translateY(70px) !important;
     }
 
-    /* 9. Create real space before Our Services */
+    /* PUSH OUR SERVICES DOWN */
     .service-info-bx {
-        margin-top: 240px !important;
+        margin-top: 260px !important;
     }
 }
-</style>
+@media (max-width: 768px) {
+    .mobile-solid {
+        position: static !important;
+        background: #000 !important;
+    }
+}
 </head>	
 	 </head>
 <body id="bg">
 <div class="page-wraper">
 <div id="loading-icon-bx"></div>
 	<!-- Header Top ==== -->
-    <header class="header rs-nav header-transparent">
+   <header class="header rs-nav header-transparent mobile-solid">
 		<div class="top-bar">
 			<div class="container">
 				<div class="row d-fle x justify-content-between">
