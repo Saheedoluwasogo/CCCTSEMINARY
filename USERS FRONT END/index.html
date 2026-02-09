@@ -55,33 +55,31 @@
 <style>
 @media (max-width: 768px) {
 
-    .top-bar,
-    header.header {
-        position: relative !important;
-    }
-
+    /* Header must not overlay slider */
     .header-transparent {
+        position: relative !important;
         background: #000 !important;
     }
 
-    body {
-        overflow-x: hidden;
+    /* Reduce header height impact */
+    header.header {
+        padding-bottom: 10px;
     }
 
-    .rev-slider,
-    .rev_slider_wrapper {
-        position: relative !important;
-        z-index: 1 !important;
+    /* Slider spacing */
+    .rev-slider {
+        margin-top: 110px !important;
     }
 
+    /* Force captions to wrap correctly */
     .tp-caption {
-        position: relative !important;
         white-space: normal !important;
         text-align: center !important;
         max-width: 90% !important;
-        margin: 0 auto !important;
+        left: 5% !important;
     }
 
+    /* Title & subtitle scaling */
     .Newspaper-Title {
         font-size: 22px !important;
         line-height: 28px !important;
@@ -92,12 +90,15 @@
         line-height: 22px !important;
     }
 
-    .service-info-bx {
-        margin-top: 260px !important;
+    /* Push buttons down */
+    #slide-100-layer-5,
+    #slide-100-layer-6,
+    #slide-200-layer-5,
+    #slide-200-layer-6 {
+        margin-top: 40px !important;
     }
 }
-</style>
-
+</script>
 </head>	
 	 </head>
 <body id="bg">
@@ -1227,6 +1228,15 @@ jQuery(document).ready(function() {
 		});
 	}
 });	
+</script>
+<script>
+jQuery(document).ready(function() {
+    var ttrevapi;
+    var tpj =jQuery;
+    if(tpj("#rev_slider_486_1").revolution == undefined){
+        revslider_showDoubleJqueryError("#rev_slider_486_1");
+    }else{
+        ttrevapi = tpj("#rev_slider_486_1").show().revolution({
 </script>
 </body>
 
