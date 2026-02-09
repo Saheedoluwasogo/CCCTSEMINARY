@@ -3356,7 +3356,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 		font-weight: 400;
 	}
 	.profile-head{
-		padding: 10px 15px 10px 15px;
+		paddzing: 10px 15px 10px 15px;
 	}
 	.edit-profile{
 		padding:15px;
@@ -3371,4 +3371,22 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 		font-size: 24px;
 		margin-bottom: 5px;
 	}
+}
+/* ===== FIX HEADER & SLIDER SEPARATION ===== */
+
+.header-transparent{
+    position: relative !important;
+}
+
+.menu-bar{
+    position: relative !important;
+}
+
+.rev_slider_wrapper{
+    margin-top: 0 !important;
+}
+
+.service-info-bx{
+    margin-top: 0 !important;
+    padding-top: 80px;
 }
