@@ -3372,21 +3372,3 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 		margin-bottom: 5px;
 	}
 }
-/* ===== FIX HEADER & SLIDER SEPARATION ===== */
-
-.header-transparent{
-    position: relative !important;
-}
-
-.menu-bar{
-    position: relative !important;
-}
-
-.rev_slider_wrapper{
-    margin-top: 0 !important;
-}
-
-.service-info-bx{
-    margin-top: 0 !important;
-    padding-top: 80px;
-}
