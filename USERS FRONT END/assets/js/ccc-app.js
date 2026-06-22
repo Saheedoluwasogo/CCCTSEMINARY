@@ -142,9 +142,32 @@
 		});
 	}
 
+	function wireSubscribe() {
+		var forms = document.querySelectorAll('form.subscription-form');
+		Array.prototype.forEach.call(forms, function (form) {
+			form.addEventListener('submit', function (e) {
+				e.preventDefault();
+				var payload = { email: val(form, 'email') };
+				withButton(form, function () {
+					return postJSON('/api/subscribe', payload).then(function (r) {
+						if (r.body.ok) {
+							showMessage(form, r.body.message || 'Subscribed.', 'success');
+							form.reset();
+						} else {
+							showMessage(form, r.body.error || 'Subscription failed.', 'error');
+						}
+					}).catch(function () {
+						showMessage(form, 'Network error. Please try again.', 'error');
+					});
+				});
+			});
+		});
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
 		wireContact();
 		wireRegister();
 		wireLogin();
+		wireSubscribe();
 	});
 })();

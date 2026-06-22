@@ -33,6 +33,12 @@ db.exec(`
 		message TEXT NOT NULL,
 		created_at TEXT NOT NULL DEFAULT (datetime('now'))
 	);
+
+	CREATE TABLE IF NOT EXISTS subscriptions (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+		created_at TEXT NOT NULL DEFAULT (datetime('now'))
+	);
 `);
 
 module.exports = db;

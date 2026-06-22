@@ -133,6 +133,18 @@ app.post('/api/contact', (req, res) => {
 	return res.status(201).json({ ok: true, message: 'Thank you! Your message has been received.' });
 });
 
+app.post('/api/subscribe', (req, res) => {
+	const email = (req.body.email || '').trim().toLowerCase();
+
+	if (!EMAIL_RE.test(email)) {
+		return res.status(400).json({ ok: false, error: 'Please enter a valid email address.' });
+	}
+
+	db.prepare('INSERT OR IGNORE INTO subscriptions (email) VALUES (?)').run(email);
+
+	return res.status(201).json({ ok: true, message: 'You are subscribed for Bible study updates.' });
+});
+
 // ----- Static site ---------------------------------------------------------
 app.use(express.static(SITE_DIR));
 
