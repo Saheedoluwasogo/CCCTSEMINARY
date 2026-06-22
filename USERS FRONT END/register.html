@@ -58,24 +58,84 @@
 		<div class="account-form-inner">
 			<div class="account-container">
 				<div class="heading-bx left">
-					<h2 class="title-head">Sign Up <span>Now</span></h2>
-					<p>Login Your Account <a href="login.html">Click here</a></p>
+					<h2 class="title-head" id="registerHeading">Sign Up <span>Now</span></h2>
+					<p>Already have an account? <a href="login.html" id="loginLink">Click here</a></p>
 				</div>	
-				<form class="contact-bx">
+				<form class="contact-bx" id="cccRegisterForm">
 					<div class="row placeani">
 						<div class="col-lg-12">
 							<div class="form-group">
 								<div class="input-group">
 									<label>Your Name</label>
-									<input name="dzName" type="text" required="" class="form-control">
+									<input name="name" type="text" required="" class="form-control">
 								</div>
 							</div>
 						</div>
 						<div class="col-lg-12">
 							<div class="form-group">
 								<div class="input-group">
+									<label>I am registering as</label>
+									<select name="role" id="roleSelect" class="form-control">
+										<option value="student">Student</option>
+										<option value="alumni">Alumnus / Alumna</option>
+										<option value="staff">Staff</option>
+										<option value="non_staff">Non-Staff</option>
+										<option value="all_users">Visitor / General</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div id="studentFields">
+							<div class="col-lg-12">
+								<div class="form-group">
+									<div class="input-group">
+										<label>Are you a new or returning student?</label>
+										<select name="studentType" id="studentType" class="form-control">
+											<option value="new">New Student</option>
+											<option value="returning">Returning Student</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<div class="form-group">
+									<div class="input-group">
+										<label>Programme</label>
+										<select name="programme" id="programmeSelect" class="form-control">
+											<option value="certificate">Year 1 &ndash; Certificate in Theology</option>
+											<option value="diploma">Year 2 &ndash; Diploma in Theology</option>
+											<option value="bachelor">Year 3 &ndash; Bachelor in Theology</option>
+											<option value="masters">Masters in Theology</option>
+											<option value="phd">PhD in Theology</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<div class="form-group">
+									<div class="input-group">
+										<label>Study Mode</label>
+										<select name="studyMode" id="studyModeSelect" class="form-control">
+											<option value="campus">Campus (On-site)</option>
+											<option value="online">Online</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-12" id="matricGroup">
+							<div class="form-group">
+								<div class="input-group">
+									<label>Matriculation Number</label>
+									<input name="matricNumber" type="text" class="form-control">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-12" id="emailGroup">
+							<div class="form-group">
+								<div class="input-group">
 									<label>Your Email Address</label>
-									<input name="dzName" type="email" required="" class="form-control">
+									<input name="email" type="email" class="form-control">
 								</div>
 							</div>
 						</div>
@@ -83,7 +143,7 @@
 							<div class="form-group">
 								<div class="input-group"> 
 									<label>Your Password</label>
-									<input name="dzEmail" type="password" class="form-control" required="">
+									<input name="password" type="password" class="form-control" required="" minlength="6">
 								</div>
 							</div>
 						</div>
@@ -119,6 +179,8 @@
 <script src="assets/js/functions.js"></script>
 <script src="assets/js/contact.js"></script>
 <script src='assets/vendors/switcher/switcher.js'></script>
+<script src="assets/js/ccc-app.js"></script>
+<script src="assets/js/ccc-auth-nav.js"></script>
 </body>
 
 </html>
