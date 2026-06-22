@@ -2474,6 +2474,25 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#391800', end
 	font-size: 10px;
 	color:var(--primary);
 }
+/* Dropdowns always show a selected value, so keep their label floated up
+   instead of overlapping the chosen option. */
+.courses-search-bx .input-group:has(select) label,
+.contact-bx .input-group:has(select) label{
+	top: -8px;
+	font-size: 10px;
+	color:var(--primary);
+}
+.courses-search-bx .input-group:has(select),
+.contact-bx .input-group:has(select){
+	padding-top: 10px;
+}
+.contact-bx .input-group select.form-control{
+	border-width: 0 0 2px 0;
+	border-color:#E0E0E0;
+	background-color:rgba(0,0,0,0);
+	padding:10px 0;
+	height:auto;
+}
 .contact-bx .input-group textarea.form-control{
 	height:120px;
 }
