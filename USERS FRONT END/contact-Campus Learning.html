@@ -272,7 +272,7 @@
 						</div>
 					</div>
 					<div class="col-lg-7 col-md-7">
-						<form class="contact-bx ajax-form" action="http://educhamp.themetrades.com/demo/assets/script/contact.php">
+						<form class="contact-bx" id="cccContactForm" action="/api/contact" method="post">
 						<div class="ajax-message"></div>
 							<div class="heading-bx left">
 								<h2 class="title-head">Get In <span>Touch</span></h2>
@@ -323,7 +323,7 @@
 									<div class="form-group">
 										<div class="input-group">
 											<div class="g-recaptcha" data-sitekey="6Lf2gYwUAAAAAJLxwnZTvpJqbYFWqVyzE-8BWhVe" data-callback="verifyRecaptchaCallback" data-expired-callback="expiredRecaptchaCallback"></div>
-											<input class="form-control d-none" style="display:none;" data-recaptcha="true" required data-error="Please complete the Captcha">
+											<input class="form-control d-none" style="display:none;" data-error="Please complete the Captcha">
 										</div>
 									</div>
 								</div>
@@ -464,6 +464,7 @@
 <script src="assets/js/functions.js"></script>
 <script src="assets/js/contact.js"></script>
 <script src='assets/vendors/switcher/switcher.js'></script>
+<script src="assets/js/ccc-app.js"></script>
 <script src='../../www.google.com/recaptcha/api.js'></script>
 </body>
 
