@@ -533,7 +533,7 @@ app.post('/api/my/switch-mode', requireRole('student'), (req, res) => {
 	db.prepare("INSERT INTO payments (user_id, reference, amount, purpose, status) VALUES (?, ?, ?, 'Study mode switch fee', 'paid')")
 		.run(req.user.id, reference, MODE_SWITCH_FEE);
 	db.prepare('UPDATE users SET study_mode = ? WHERE id = ?').run(target, req.user.id);
-	return res.json({ ok: true, message: 'You are now a ' + STUDY_MODES[target] + ' student.', studyMode: target, reference: reference });
+	return res.json({ ok: true, message: 'You are now ' + (target === 'online' ? 'an Online' : 'a Campus') + ' student.', studyMode: target, reference: reference });
 });
 
 // ----- Payments (mock gateway; ready to swap for Paystack/Flutterwave) ------
