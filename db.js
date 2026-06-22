@@ -23,7 +23,21 @@ db.exec(`
 		password_hash TEXT NOT NULL,
 		role TEXT NOT NULL DEFAULT 'all_users',
 		matric_number TEXT UNIQUE COLLATE NOCASE,
+		study_mode TEXT,
+		programme TEXT,
+		student_type TEXT,
+		application_status TEXT NOT NULL DEFAULT 'matriculated',
 		created_at TEXT NOT NULL DEFAULT (datetime('now'))
+	);
+
+	CREATE TABLE IF NOT EXISTS documents (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER NOT NULL,
+		doc_type TEXT NOT NULL,
+		filename TEXT NOT NULL,
+		original_name TEXT,
+		created_at TEXT NOT NULL DEFAULT (datetime('now')),
+		FOREIGN KEY (user_id) REFERENCES users(id)
 	);
 
 	CREATE TABLE IF NOT EXISTS messages (
@@ -98,6 +112,19 @@ if (colNames.indexOf('role') === -1) {
 if (colNames.indexOf('matric_number') === -1) {
 	db.exec('ALTER TABLE users ADD COLUMN matric_number TEXT');
 }
+if (colNames.indexOf('study_mode') === -1) {
+	db.exec('ALTER TABLE users ADD COLUMN study_mode TEXT');
+}
+if (colNames.indexOf('programme') === -1) {
+	db.exec('ALTER TABLE users ADD COLUMN programme TEXT');
+}
+if (colNames.indexOf('student_type') === -1) {
+	db.exec('ALTER TABLE users ADD COLUMN student_type TEXT');
+}
+if (colNames.indexOf('application_status') === -1) {
+	db.exec("ALTER TABLE users ADD COLUMN application_status TEXT NOT NULL DEFAULT 'matriculated'");
+	// Existing students keep their matriculated status; nothing else to backfill.
+}
 
 // Older databases created email as NOT NULL, which blocks matric-only students.
 // Rebuild the table so email is nullable while preserving existing rows.
@@ -114,10 +141,14 @@ if (emailCol && emailCol.notnull === 1) {
 				password_hash TEXT NOT NULL,
 				role TEXT NOT NULL DEFAULT 'all_users',
 				matric_number TEXT UNIQUE COLLATE NOCASE,
+				study_mode TEXT,
+				programme TEXT,
+				student_type TEXT,
+				application_status TEXT NOT NULL DEFAULT 'matriculated',
 				created_at TEXT NOT NULL DEFAULT (datetime('now'))
 			);
-			INSERT INTO users_new (id, name, email, password_hash, role, matric_number, created_at)
-				SELECT id, name, email, password_hash, COALESCE(role, 'all_users'), matric_number, created_at FROM users;
+			INSERT INTO users_new (id, name, email, password_hash, role, matric_number, study_mode, programme, student_type, application_status, created_at)
+				SELECT id, name, email, password_hash, COALESCE(role, 'all_users'), matric_number, study_mode, programme, student_type, COALESCE(application_status, 'matriculated'), created_at FROM users;
 			DROP TABLE users;
 			ALTER TABLE users_new RENAME TO users;
 		`);

@@ -3,10 +3,12 @@
 require('dotenv').config();
 
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
 
 const db = require('./db');
 
@@ -25,9 +27,60 @@ const ROLE_LABELS = {
 	alumni: 'Alumnus',
 	staff: 'Staff',
 	non_staff: 'Non-Staff',
-	all_users: 'Member',
+	all_users: 'Visitor',
 	admin: 'Administrator',
 };
+
+// Study programmes, ordered from entry level upward. `fee` is the single
+// course-registration fee charged once the student submits their courses.
+const PROGRAMMES = {
+	certificate: { label: 'Certificate in Theology', year: 'Year 1', code: 'CERT', fee: 20000 },
+	diploma: { label: 'Diploma in Theology', year: 'Year 2', code: 'DIP', fee: 30000 },
+	bachelor: { label: 'Bachelor in Theology', year: 'Year 3', code: 'BTH', fee: 50000 },
+	masters: { label: 'Masters in Theology', year: 'Masters', code: 'MTH', fee: 80000 },
+	phd: { label: 'PhD in Theology', year: 'Doctorate', code: 'PHD', fee: 120000 },
+};
+
+const STUDY_MODES = { online: 'Online', campus: 'Campus' };
+const STUDENT_TYPES = { new: 'New Student', returning: 'Returning Student' };
+const MODE_SWITCH_FEE = 5000;
+
+// Documents a new student must submit before a matriculation number is issued.
+const REQUIRED_DOCS = {
+	passport_photo: 'Passport Photograph',
+	medical_fitness: 'Medical Fitness Result',
+	baptismal_certificate: 'Baptismal Certificate',
+	anointment_certificate: 'Anointment Certificate',
+	recommendation_letter: 'Letter of Recommendation',
+	educational_certificate: 'Educational Certificate(s)',
+};
+const DOC_TYPES = Object.assign({ other: 'Other Document' }, REQUIRED_DOCS);
+
+// ----- File uploads (student documents) ------------------------------------
+const UPLOAD_DIR = process.env.UPLOAD_DIR
+	? path.resolve(process.env.UPLOAD_DIR)
+	: path.join(__dirname, 'data', 'uploads');
+if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		const dir = path.join(UPLOAD_DIR, String(req.user.id));
+		fs.mkdirSync(dir, { recursive: true });
+		cb(null, dir);
+	},
+	filename: function (req, file, cb) {
+		const safe = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-60);
+		cb(null, Date.now() + '-' + safe);
+	},
+});
+const upload = multer({
+	storage: storage,
+	limits: { fileSize: 5 * 1024 * 1024 },
+	fileFilter: function (req, file, cb) {
+		const ok = /^(image\/(jpeg|png|gif|webp)|application\/pdf)$/.test(file.mimetype);
+		cb(ok ? null : new Error('Only image or PDF files are allowed.'), ok);
+	},
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -37,13 +90,23 @@ app.use(cookieParser());
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function publicUser(row) {
+	const prog = PROGRAMMES[row.programme];
 	return {
 		id: row.id,
 		name: row.name,
 		email: row.email,
 		role: row.role,
-		roleLabel: ROLE_LABELS[row.role] || 'Member',
+		roleLabel: ROLE_LABELS[row.role] || 'Visitor',
 		matricNumber: row.matric_number,
+		studyMode: row.study_mode,
+		studyModeLabel: STUDY_MODES[row.study_mode] || null,
+		programme: row.programme,
+		programmeLabel: prog ? prog.label : null,
+		programmeYear: prog ? prog.year : null,
+		registrationFee: prog ? prog.fee : 0,
+		studentType: row.student_type,
+		studentTypeLabel: STUDENT_TYPES[row.student_type] || null,
+		applicationStatus: row.application_status,
 	};
 }
 
@@ -116,18 +179,49 @@ app.post('/api/register', (req, res) => {
 	const passwordHash = bcrypt.hashSync(password, 10);
 
 	if (role === 'student') {
-		if (!matric) {
-			return res.status(400).json({ ok: false, error: 'Matriculation number is required for students.' });
+		const programme = (req.body.programme || '').trim();
+		let studyMode = (req.body.studyMode || req.body.study_mode || 'campus').trim();
+		let studentType = (req.body.studentType || req.body.student_type || 'new').trim();
+		if (!PROGRAMMES[programme]) {
+			return res.status(400).json({ ok: false, error: 'Please choose a valid programme.' });
 		}
-		if (db.prepare('SELECT id FROM users WHERE matric_number = ?').get(matric)) {
-			return res.status(409).json({ ok: false, error: 'An account with this matriculation number already exists.' });
+		if (!STUDY_MODES[studyMode]) studyMode = 'campus';
+		if (!STUDENT_TYPES[studentType]) studentType = 'new';
+
+		// Returning students already hold a matriculation number; new students
+		// must apply with an email and earn a matric number after uploading
+		// their documents.
+		if (studentType === 'returning') {
+			if (!matric) {
+				return res.status(400).json({ ok: false, error: 'Returning students must enter their matriculation number.' });
+			}
+			if (db.prepare('SELECT id FROM users WHERE matric_number = ?').get(matric)) {
+				return res.status(409).json({ ok: false, error: 'An account with this matriculation number already exists. Please sign in instead.' });
+			}
+			if (email && db.prepare('SELECT id FROM users WHERE email = ?').get(email)) {
+				return res.status(409).json({ ok: false, error: 'An account with this email already exists.' });
+			}
+			const info = db
+				.prepare("INSERT INTO users (name, email, password_hash, role, matric_number, study_mode, programme, student_type, application_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'matriculated')")
+				.run(name, email || null, passwordHash, role, matric, studyMode, programme, studentType);
+			const user = publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(info.lastInsertRowid));
+			setAuthCookie(res, user);
+			return res.status(201).json({ ok: true, user });
 		}
-		if (email && db.prepare('SELECT id FROM users WHERE email = ?').get(email)) {
+
+		// New student application.
+		if (!email) {
+			return res.status(400).json({ ok: false, error: 'New students must register with an email address.' });
+		}
+		if (!EMAIL_RE.test(email)) {
+			return res.status(400).json({ ok: false, error: 'Please enter a valid email address.' });
+		}
+		if (db.prepare('SELECT id FROM users WHERE email = ?').get(email)) {
 			return res.status(409).json({ ok: false, error: 'An account with this email already exists.' });
 		}
 		const info = db
-			.prepare('INSERT INTO users (name, email, password_hash, role, matric_number) VALUES (?, ?, ?, ?, ?)')
-			.run(name, email || null, passwordHash, role, matric);
+			.prepare("INSERT INTO users (name, email, password_hash, role, study_mode, programme, student_type, application_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')")
+			.run(name, email, passwordHash, role, studyMode, programme, studentType);
 		const user = publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(info.lastInsertRowid));
 		setAuthCookie(res, user);
 		return res.status(201).json({ ok: true, user });
@@ -293,6 +387,153 @@ app.get('/api/my/materials', requireAuth, (req, res) => {
 		)
 		.all(req.user.id);
 	return res.json({ ok: true, materials: rows });
+});
+
+// ----- Reference data for the front-end ------------------------------------
+app.get('/api/meta', (req, res) => {
+	const programmes = Object.keys(PROGRAMMES).map(function (key) {
+		const p = PROGRAMMES[key];
+		return { key: key, label: p.label, year: p.year, fee: p.fee };
+	});
+	const studyModes = Object.keys(STUDY_MODES).map(function (k) { return { key: k, label: STUDY_MODES[k] }; });
+	const studentTypes = Object.keys(STUDENT_TYPES).map(function (k) { return { key: k, label: STUDENT_TYPES[k] }; });
+	const requiredDocs = Object.keys(REQUIRED_DOCS).map(function (k) { return { key: k, label: REQUIRED_DOCS[k] }; });
+	return res.json({ ok: true, programmes, studyModes, studentTypes, requiredDocs, modeSwitchFee: MODE_SWITCH_FEE });
+});
+
+// ----- Student documents & matriculation -----------------------------------
+function documentStatus(userId) {
+	const rows = db.prepare('SELECT id, doc_type, original_name, created_at FROM documents WHERE user_id = ? ORDER BY created_at DESC').all(userId);
+	const byType = {};
+	rows.forEach(function (r) { if (!byType[r.doc_type]) byType[r.doc_type] = r; });
+	const required = Object.keys(REQUIRED_DOCS).map(function (key) {
+		return { type: key, label: REQUIRED_DOCS[key], uploaded: !!byType[key], doc: byType[key] || null };
+	});
+	const others = rows.filter(function (r) { return !REQUIRED_DOCS[r.doc_type]; });
+	const complete = required.every(function (d) { return d.uploaded; });
+	return { required: required, others: others, complete: complete };
+}
+
+app.get('/api/my/documents', requireAuth, (req, res) => {
+	const status = documentStatus(req.user.id);
+	return res.json({
+		ok: true,
+		required: status.required,
+		others: status.others,
+		complete: status.complete,
+		applicationStatus: req.user.applicationStatus,
+		matricNumber: req.user.matricNumber,
+	});
+});
+
+app.post('/api/my/documents', requireAuth, (req, res) => {
+	upload.single('document')(req, res, function (err) {
+		if (err) {
+			return res.status(400).json({ ok: false, error: err.message || 'Upload failed.' });
+		}
+		if (!req.file) {
+			return res.status(400).json({ ok: false, error: 'Please choose a file to upload.' });
+		}
+		let docType = (req.body.docType || req.body.doc_type || '').trim();
+		if (!DOC_TYPES[docType]) docType = 'other';
+		// Replace any existing document of the same (required) type.
+		if (docType !== 'other') {
+			const existing = db.prepare('SELECT * FROM documents WHERE user_id = ? AND doc_type = ?').all(req.user.id, docType);
+			existing.forEach(function (d) {
+				try { fs.unlinkSync(path.join(UPLOAD_DIR, String(req.user.id), d.filename)); } catch (e) { /* ignore */ }
+				db.prepare('DELETE FROM documents WHERE id = ?').run(d.id);
+			});
+		}
+		db.prepare('INSERT INTO documents (user_id, doc_type, filename, original_name) VALUES (?, ?, ?, ?)')
+			.run(req.user.id, docType, req.file.filename, req.file.originalname);
+		return res.status(201).json({ ok: true, message: DOC_TYPES[docType] + ' uploaded.' });
+	});
+});
+
+app.delete('/api/my/documents/:id', requireAuth, (req, res) => {
+	const id = parseInt(req.params.id, 10);
+	const doc = db.prepare('SELECT * FROM documents WHERE id = ? AND user_id = ?').get(id, req.user.id);
+	if (!doc) return res.status(404).json({ ok: false, error: 'Document not found.' });
+	try { fs.unlinkSync(path.join(UPLOAD_DIR, String(req.user.id), doc.filename)); } catch (e) { /* ignore */ }
+	db.prepare('DELETE FROM documents WHERE id = ?').run(id);
+	return res.json({ ok: true, message: 'Document removed.' });
+});
+
+app.get('/api/documents/:id/file', requireAuth, (req, res) => {
+	const id = parseInt(req.params.id, 10);
+	const doc = db.prepare('SELECT * FROM documents WHERE id = ?').get(id);
+	if (!doc) return res.status(404).json({ ok: false, error: 'Document not found.' });
+	const isOwner = doc.user_id === req.user.id;
+	const isReviewer = req.user.role === 'staff' || req.user.role === 'admin';
+	if (!isOwner && !isReviewer) {
+		return res.status(403).json({ ok: false, error: 'You do not have permission to view this document.' });
+	}
+	return res.sendFile(path.join(UPLOAD_DIR, String(doc.user_id), doc.filename));
+});
+
+function issueMatric(programmeKey) {
+	const prog = PROGRAMMES[programmeKey] || { code: 'GEN' };
+	const year = new Date().getFullYear();
+	const count = db.prepare("SELECT COUNT(*) AS n FROM users WHERE matric_number IS NOT NULL").get().n;
+	const seq = String(count + 1).padStart(4, '0');
+	return 'CCCTS/' + prog.code + '/' + year + '/' + seq;
+}
+
+app.post('/api/my/matriculate', requireRole('student'), (req, res) => {
+	if (req.user.applicationStatus === 'matriculated' && req.user.matricNumber) {
+		return res.json({ ok: true, message: 'You are already matriculated.', matricNumber: req.user.matricNumber });
+	}
+	const status = documentStatus(req.user.id);
+	if (!status.complete) {
+		return res.status(400).json({ ok: false, error: 'Please upload all required documents before requesting a matriculation number.' });
+	}
+	let matric;
+	for (let i = 0; i < 5; i++) {
+		matric = issueMatric(req.user.programme);
+		if (!db.prepare('SELECT id FROM users WHERE matric_number = ?').get(matric)) break;
+		matric = matric + '-' + Math.floor(Math.random() * 90 + 10);
+	}
+	db.prepare("UPDATE users SET matric_number = ?, application_status = 'matriculated' WHERE id = ?").run(matric, req.user.id);
+	return res.json({ ok: true, message: 'Congratulations! Your matriculation number has been issued.', matricNumber: matric });
+});
+
+// ----- Course registration fee & study-mode switch -------------------------
+app.get('/api/my/registration', requireAuth, (req, res) => {
+	const fee = req.user.registrationFee || 0;
+	const courses = db
+		.prepare(`SELECT c.* FROM enrollments e JOIN courses c ON c.id = e.course_id WHERE e.user_id = ? ORDER BY c.code`)
+		.all(req.user.id);
+	const paid = db
+		.prepare("SELECT COALESCE(SUM(amount),0) AS n FROM payments WHERE user_id = ? AND purpose = 'Course registration' AND status = 'paid'")
+		.get(req.user.id).n;
+	return res.json({
+		ok: true,
+		programme: req.user.programme,
+		programmeLabel: req.user.programmeLabel,
+		studyMode: req.user.studyMode,
+		studyModeLabel: req.user.studyModeLabel,
+		registrationFee: fee,
+		paid: paid,
+		outstanding: Math.max(fee - paid, 0),
+		courseCount: courses.length,
+		modeSwitchFee: MODE_SWITCH_FEE,
+	});
+});
+
+app.post('/api/my/switch-mode', requireRole('student'), (req, res) => {
+	const target = (req.body.mode || '').trim();
+	if (!STUDY_MODES[target]) {
+		return res.status(400).json({ ok: false, error: 'Please choose a valid study mode.' });
+	}
+	if (target === req.user.studyMode) {
+		return res.status(400).json({ ok: false, error: 'You are already studying ' + STUDY_MODES[target] + '.' });
+	}
+	// Mock the switch fee payment (this is the seam for the real gateway).
+	const reference = 'CCCTS-' + Date.now() + '-' + Math.floor(Math.random() * 1e6);
+	db.prepare("INSERT INTO payments (user_id, reference, amount, purpose, status) VALUES (?, ?, ?, 'Study mode switch fee', 'paid')")
+		.run(req.user.id, reference, MODE_SWITCH_FEE);
+	db.prepare('UPDATE users SET study_mode = ? WHERE id = ?').run(target, req.user.id);
+	return res.json({ ok: true, message: 'You are now a ' + STUDY_MODES[target] + ' student.', studyMode: target, reference: reference });
 });
 
 // ----- Payments (mock gateway; ready to swap for Paystack/Flutterwave) ------

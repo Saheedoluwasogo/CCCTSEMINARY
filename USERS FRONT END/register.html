@@ -80,8 +80,46 @@
 										<option value="alumni">Alumnus / Alumna</option>
 										<option value="staff">Staff</option>
 										<option value="non_staff">Non-Staff</option>
-										<option value="all_users">General / All Users</option>
+										<option value="all_users">Visitor / General</option>
 									</select>
+								</div>
+							</div>
+						</div>
+						<div id="studentFields">
+							<div class="col-lg-12">
+								<div class="form-group">
+									<div class="input-group">
+										<label>Are you a new or returning student?</label>
+										<select name="studentType" id="studentType" class="form-control">
+											<option value="new">New Student</option>
+											<option value="returning">Returning Student</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<div class="form-group">
+									<div class="input-group">
+										<label>Programme</label>
+										<select name="programme" id="programmeSelect" class="form-control">
+											<option value="certificate">Year 1 &ndash; Certificate in Theology</option>
+											<option value="diploma">Year 2 &ndash; Diploma in Theology</option>
+											<option value="bachelor">Year 3 &ndash; Bachelor in Theology</option>
+											<option value="masters">Masters in Theology</option>
+											<option value="phd">PhD in Theology</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<div class="form-group">
+									<div class="input-group">
+										<label>Study Mode</label>
+										<select name="studyMode" id="studyModeSelect" class="form-control">
+											<option value="campus">Campus (On-site)</option>
+											<option value="online">Online</option>
+										</select>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -142,6 +180,7 @@
 <script src="assets/js/contact.js"></script>
 <script src='assets/vendors/switcher/switcher.js'></script>
 <script src="assets/js/ccc-app.js"></script>
+<script src="assets/js/ccc-auth-nav.js"></script>
 </body>
 
 </html>

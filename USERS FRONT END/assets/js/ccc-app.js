@@ -61,7 +61,7 @@
 		alumni: 'Alumni Portal',
 		staff: 'Staff Portal',
 		non_staff: 'Non-Staff Portal',
-		all_users: 'All Users Portal',
+		all_users: 'Visitors Portal',
 	};
 
 	function withButton(form, fn) {
@@ -109,11 +109,20 @@
 	function applyRoleFields(role) {
 		var matricGroup = document.getElementById('matricGroup');
 		var emailGroup = document.getElementById('emailGroup');
+		var studentFields = document.getElementById('studentFields');
+		var studentType = document.getElementById('studentType');
 		var isStudent = role === 'student';
-		if (matricGroup) matricGroup.style.display = isStudent ? '' : 'none';
+		var isReturning = studentType && studentType.value === 'returning';
+
+		if (studentFields) studentFields.style.display = isStudent ? '' : 'none';
+		// Matric number is only collected from returning students; new students
+		// earn one after uploading their documents in the dashboard.
+		if (matricGroup) matricGroup.style.display = (isStudent && isReturning) ? '' : 'none';
+
 		if (emailGroup) {
 			var emailInput = emailGroup.querySelector('input[name="email"]');
-			if (emailInput) emailInput.required = !isStudent;
+			// Email is required for everyone except returning students (who use matric).
+			if (emailInput) emailInput.required = !(isStudent && isReturning);
 		}
 	}
 
@@ -130,9 +139,13 @@
 			var loginLink = document.getElementById('loginLink');
 			if (loginLink) loginLink.href = 'login.html?portal=' + portal;
 		}
+		var studentType = document.getElementById('studentType');
 		if (roleSelect) {
 			applyRoleFields(roleSelect.value);
 			roleSelect.addEventListener('change', function () { applyRoleFields(roleSelect.value); });
+		}
+		if (studentType) {
+			studentType.addEventListener('change', function () { applyRoleFields(roleSelect ? roleSelect.value : ''); });
 		}
 
 		form.addEventListener('submit', function (e) {
@@ -143,6 +156,9 @@
 				email: val(form, 'email'),
 				matricNumber: val(form, 'matricNumber'),
 				password: val(form, 'password'),
+				programme: val(form, 'programme'),
+				studyMode: val(form, 'studyMode'),
+				studentType: val(form, 'studentType'),
 			};
 			withButton(form, function () {
 				return postJSON('/api/register', payload).then(function (r) {
