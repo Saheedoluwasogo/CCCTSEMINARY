@@ -80,6 +80,21 @@ function requireAuth(req, res, next) {
 	next();
 }
 
+function requireRole() {
+	const allowed = Array.prototype.slice.call(arguments);
+	return function (req, res, next) {
+		const user = currentUser(req);
+		if (!user) {
+			return res.status(401).json({ ok: false, error: 'Please sign in to continue.' });
+		}
+		if (allowed.indexOf(user.role) === -1) {
+			return res.status(403).json({ ok: false, error: 'You do not have permission to do that.' });
+		}
+		req.user = user;
+		next();
+	};
+}
+
 // ----- API -----------------------------------------------------------------
 app.post('/api/register', (req, res) => {
 	const name = (req.body.name || '').trim();
@@ -231,6 +246,41 @@ app.delete('/api/enroll/:courseId', requireAuth, (req, res) => {
 	const courseId = parseInt(req.params.courseId, 10);
 	db.prepare('DELETE FROM enrollments WHERE user_id = ? AND course_id = ?').run(req.user.id, courseId);
 	return res.json({ ok: true, message: 'Course dropped.' });
+});
+
+// Staff/admin: manage a course's lecture materials.
+const MATERIAL_KINDS = ['note', 'video', 'slide', 'link'];
+
+app.get('/api/courses/:courseId/materials', requireRole('staff', 'admin'), (req, res) => {
+	const courseId = parseInt(req.params.courseId, 10);
+	const rows = db
+		.prepare('SELECT id, course_id, title, kind, url, created_at FROM materials WHERE course_id = ? ORDER BY created_at DESC')
+		.all(courseId);
+	return res.json({ ok: true, materials: rows });
+});
+
+app.post('/api/courses/:courseId/materials', requireRole('staff', 'admin'), (req, res) => {
+	const courseId = parseInt(req.params.courseId, 10);
+	const title = (req.body.title || '').trim();
+	let kind = (req.body.kind || 'note').trim();
+	const url = (req.body.url || '').trim();
+	if (MATERIAL_KINDS.indexOf(kind) === -1) kind = 'note';
+	if (!db.prepare('SELECT id FROM courses WHERE id = ?').get(courseId)) {
+		return res.status(404).json({ ok: false, error: 'Course not found.' });
+	}
+	if (!title) {
+		return res.status(400).json({ ok: false, error: 'A material title is required.' });
+	}
+	const info = db
+		.prepare('INSERT INTO materials (course_id, title, kind, url) VALUES (?, ?, ?, ?)')
+		.run(courseId, title, kind, url || null);
+	return res.status(201).json({ ok: true, message: 'Material added.', id: info.lastInsertRowid });
+});
+
+app.delete('/api/materials/:id', requireRole('staff', 'admin'), (req, res) => {
+	const id = parseInt(req.params.id, 10);
+	db.prepare('DELETE FROM materials WHERE id = ?').run(id);
+	return res.json({ ok: true, message: 'Material removed.' });
 });
 
 app.get('/api/my/materials', requireAuth, (req, res) => {

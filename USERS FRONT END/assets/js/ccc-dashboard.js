@@ -219,12 +219,82 @@
 	}
 
 	function renderStaff(user) {
-		renderSimple(user, 'Welcome, staff member. Manage your teaching resources and seminary notices here.', [
-			{ title: 'Course Materials', text: 'Browse the courses offered and their outlines.', link: 'courses.html', cta: 'View Courses' },
-			{ title: 'Academic Calendar', text: 'Key dates, lectures and examination schedules.', link: 'events-details.html', cta: 'View Calendar' },
-			{ title: 'Notices', text: 'Internal announcements for academic staff.', link: 'blog-classic-sidebar.html', cta: 'Read Notices' },
-			{ title: 'Support', text: 'Reach the administration for any assistance.', link: 'contact-Campus Learning.html', cta: 'Contact' },
-		]);
+		root.innerHTML = headerHtml(user) +
+			'<div class="alert" style="background:#f4f6ff;border-radius:8px;padding:18px;margin-bottom:25px;">' +
+			'Welcome, staff member. Publish lecture materials to a course so enrolled students receive them online.</div>' +
+			'<div class="row">' +
+			card('Publish Lecture Material',
+				'<div class="form-group"><label>Course</label>' +
+				'<select id="staffCourse" class="form-control"></select></div>' +
+				'<div class="form-group"><label>Title</label>' +
+				'<input id="matTitle" type="text" class="form-control" placeholder="e.g. Week 1 \u2013 Introduction"></div>' +
+				'<div class="form-group"><label>Type</label>' +
+				'<select id="matKind" class="form-control">' +
+				'<option value="note">Note</option><option value="video">Video</option>' +
+				'<option value="slide">Slides</option><option value="link">Link</option></select></div>' +
+				'<div class="form-group"><label>Link / URL (optional)</label>' +
+				'<input id="matUrl" type="url" class="form-control" placeholder="https://\u2026"></div>' +
+				'<button id="addMatBtn" class="btn radius-xl">Publish</button>') +
+			card('Materials in this Course', '<div id="staffMaterials">Select a course…</div>') +
+			'</div>' +
+			'<div class="row">' +
+			card('Notices', '<p>Internal announcements for academic staff.</p><a href="blog-classic-sidebar.html" class="btn btn-sm radius-xl">Read Notices</a>') +
+			card('Support', '<p>Reach the administration for any assistance.</p><a href="contact-Campus Learning.html" class="btn btn-sm radius-xl">Contact</a>') +
+			'</div>';
+		bindLogout();
+		setupStaffMaterials();
+	}
+
+	function setupStaffMaterials() {
+		var sel = document.getElementById('staffCourse');
+		api('GET', '/api/courses').then(function (r) {
+			var courses = r.data.courses || [];
+			sel.innerHTML = courses.map(function (c) {
+				return '<option value="' + c.id + '">' + esc(c.code) + ' \u2013 ' + esc(c.title) + '</option>';
+			}).join('');
+			loadStaffMaterials();
+		});
+		sel.addEventListener('change', loadStaffMaterials);
+		document.getElementById('addMatBtn').addEventListener('click', function () {
+			var courseId = sel.value;
+			var body = {
+				title: document.getElementById('matTitle').value.trim(),
+				kind: document.getElementById('matKind').value,
+				url: document.getElementById('matUrl').value.trim(),
+			};
+			if (!body.title) { toast('Please enter a title.', false); return; }
+			api('POST', '/api/courses/' + courseId + '/materials', body).then(function (r) {
+				toast(r.data.message || r.data.error, r.data.ok);
+				if (r.data.ok) {
+					document.getElementById('matTitle').value = '';
+					document.getElementById('matUrl').value = '';
+					loadStaffMaterials();
+				}
+			});
+		});
+	}
+
+	function loadStaffMaterials() {
+		var courseId = document.getElementById('staffCourse').value;
+		api('GET', '/api/courses/' + courseId + '/materials').then(function (r) {
+			var mats = r.data.materials || [];
+			var box = document.getElementById('staffMaterials');
+			if (!mats.length) { box.innerHTML = '<p class="text-muted">No materials yet for this course.</p>'; return; }
+			box.innerHTML = '<ul class="list-unstyled">' + mats.map(function (m) {
+				var link = m.url ? '<a href="' + esc(m.url) + '" target="_blank">' + esc(m.title) + '</a>' : esc(m.title);
+				return '<li class="m-b10"><i class="fa fa-' + (m.kind === 'video' ? 'play-circle' : 'file-text-o') + ' text-primary"></i> ' +
+					link + ' <small class="text-muted">(' + esc(m.kind) + ')</small> ' +
+					'<button class="btn btn-sm radius-xl outline del-mat" data-id="' + m.id + '" style="padding:2px 10px;">Remove</button></li>';
+			}).join('') + '</ul>';
+			Array.prototype.forEach.call(box.querySelectorAll('.del-mat'), function (b) {
+				b.addEventListener('click', function () {
+					api('DELETE', '/api/materials/' + b.dataset.id).then(function (r) {
+						toast(r.data.message || r.data.error, r.data.ok);
+						loadStaffMaterials();
+					});
+				});
+			});
+		});
 	}
 
 	function renderNonStaff(user) {
