@@ -58,8 +58,8 @@
 		<div class="account-form-inner">
 			<div class="account-container">
 				<div class="heading-bx left">
-					<h2 class="title-head">Sign Up <span>Now</span></h2>
-					<p>Login Your Account <a href="login.html">Click here</a></p>
+					<h2 class="title-head" id="registerHeading">Sign Up <span>Now</span></h2>
+					<p>Already have an account? <a href="login.html" id="loginLink">Click here</a></p>
 				</div>	
 				<form class="contact-bx" id="cccRegisterForm">
 					<div class="row placeani">
@@ -74,8 +74,30 @@
 						<div class="col-lg-12">
 							<div class="form-group">
 								<div class="input-group">
+									<label>I am registering as</label>
+									<select name="role" id="roleSelect" class="form-control">
+										<option value="student">Student</option>
+										<option value="alumni">Alumnus / Alumna</option>
+										<option value="staff">Staff</option>
+										<option value="non_staff">Non-Staff</option>
+										<option value="all_users">General / All Users</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-12" id="matricGroup">
+							<div class="form-group">
+								<div class="input-group">
+									<label>Matriculation Number</label>
+									<input name="matricNumber" type="text" class="form-control">
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-12" id="emailGroup">
+							<div class="form-group">
+								<div class="input-group">
 									<label>Your Email Address</label>
-									<input name="email" type="email" required="" class="form-control">
+									<input name="email" type="email" class="form-control">
 								</div>
 							</div>
 						</div>

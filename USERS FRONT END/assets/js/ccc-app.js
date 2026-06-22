@@ -51,6 +51,19 @@
 		return el ? String(el.value || '').trim() : '';
 	}
 
+	function getParam(name) {
+		var m = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+		return m ? decodeURIComponent(m[1]) : '';
+	}
+
+	var PORTAL_LABELS = {
+		student: 'Students Portal',
+		alumni: 'Alumni Portal',
+		staff: 'Staff Portal',
+		non_staff: 'Non-Staff Portal',
+		all_users: 'All Users Portal',
+	};
+
 	function withButton(form, fn) {
 		var btn = form.querySelector('button[type="submit"], button');
 		var original = btn ? btn.innerHTML : null;
@@ -93,21 +106,49 @@
 		});
 	}
 
+	function applyRoleFields(role) {
+		var matricGroup = document.getElementById('matricGroup');
+		var emailGroup = document.getElementById('emailGroup');
+		var isStudent = role === 'student';
+		if (matricGroup) matricGroup.style.display = isStudent ? '' : 'none';
+		if (emailGroup) {
+			var emailInput = emailGroup.querySelector('input[name="email"]');
+			if (emailInput) emailInput.required = !isStudent;
+		}
+	}
+
 	function wireRegister() {
 		var form = document.getElementById('cccRegisterForm');
 		if (!form) return;
+
+		var roleSelect = document.getElementById('roleSelect');
+		var portal = getParam('portal');
+		if (portal && roleSelect && PORTAL_LABELS[portal]) {
+			roleSelect.value = portal;
+			var heading = document.getElementById('registerHeading');
+			if (heading) heading.innerHTML = 'Create your <span>' + PORTAL_LABELS[portal].replace(' Portal', '') + ' account</span>';
+			var loginLink = document.getElementById('loginLink');
+			if (loginLink) loginLink.href = 'login.html?portal=' + portal;
+		}
+		if (roleSelect) {
+			applyRoleFields(roleSelect.value);
+			roleSelect.addEventListener('change', function () { applyRoleFields(roleSelect.value); });
+		}
+
 		form.addEventListener('submit', function (e) {
 			e.preventDefault();
 			var payload = {
 				name: val(form, 'name'),
+				role: roleSelect ? roleSelect.value : 'all_users',
 				email: val(form, 'email'),
+				matricNumber: val(form, 'matricNumber'),
 				password: val(form, 'password'),
 			};
 			withButton(form, function () {
 				return postJSON('/api/register', payload).then(function (r) {
 					if (r.body.ok) {
-						showMessage(form, 'Account created! Redirecting…', 'success');
-						setTimeout(function () { window.location.href = 'index.html'; }, 1200);
+						showMessage(form, 'Account created! Redirecting to your dashboard…', 'success');
+						setTimeout(function () { window.location.href = 'dashboard.html'; }, 1200);
 					} else {
 						showMessage(form, r.body.error || 'Registration failed.', 'error');
 					}
@@ -121,17 +162,30 @@
 	function wireLogin() {
 		var form = document.getElementById('cccLoginForm');
 		if (!form) return;
+
+		var portal = getParam('portal');
+		if (portal && PORTAL_LABELS[portal]) {
+			var heading = document.getElementById('loginHeading');
+			if (heading) heading.innerHTML = PORTAL_LABELS[portal].replace(' Portal', '') + ' <span>Sign In</span>';
+			var registerLink = document.getElementById('registerLink');
+			if (registerLink) registerLink.href = 'register.html?portal=' + portal;
+			if (portal === 'student') {
+				var label = document.getElementById('identifierLabel');
+				if (label) label.textContent = 'Matriculation Number';
+			}
+		}
+
 		form.addEventListener('submit', function (e) {
 			e.preventDefault();
 			var payload = {
-				email: val(form, 'email'),
+				identifier: val(form, 'identifier'),
 				password: val(form, 'password'),
 			};
 			withButton(form, function () {
 				return postJSON('/api/login', payload).then(function (r) {
 					if (r.body.ok) {
 						showMessage(form, 'Logged in! Redirecting…', 'success');
-						setTimeout(function () { window.location.href = 'index.html'; }, 1000);
+						setTimeout(function () { window.location.href = 'dashboard.html'; }, 1000);
 					} else {
 						showMessage(form, r.body.error || 'Login failed.', 'error');
 					}
