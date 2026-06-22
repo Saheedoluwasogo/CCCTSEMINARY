@@ -83,10 +83,10 @@
 		root.innerHTML = headerHtml(user) +
 			'<div class="row">' +
 			card('Course Registration', '<div id="courseReg">Loading courses…</div>') +
-			card('My Lectures &amp; Materials', '<div id="materials">Loading…</div>') +
+			card('My Lectures & Materials', '<div id="materials">Loading…</div>') +
 			'</div>' +
 			'<div class="row">' +
-			card('Fees &amp; Payments', '<div id="payments">Loading…</div>') +
+			card('Fees & Payments', '<div id="payments">Loading…</div>') +
 			card('Profile', '<ul class="list-unstyled">' +
 				'<li><strong>Name:</strong> ' + esc(user.name) + '</li>' +
 				'<li><strong>Matric No:</strong> ' + esc(user.matricNumber || '—') + '</li>' +
